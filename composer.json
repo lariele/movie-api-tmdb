@@ -1,0 +1,33 @@
+{
+    "name": "lariele/movie-api-tmdb",
+    "description": "Import Movies from Rapid Api TMDBist.",
+    "keywords": [
+        "Laravel",
+        "M8M"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Daniel Cepec",
+            "email": "daniel.cepec@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Lariele\\MovieApiTMDB\\MovieApiTMDBServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Lariele\\MovieApiTMDB\\": "src/MovieApiTMDB",
+            "Database\\": "src/MovieApiTMDB/Database"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
