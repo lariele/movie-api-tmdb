@@ -4,7 +4,6 @@ namespace Lariele\MovieApiTMDB\API;
 
 class MovieTMDBApi
 {
-    public const LIST_PATTERN = '';
     private MovieTMDBRestService $service;
 
     public function __construct(MovieTMDBRestService $service)
@@ -14,14 +13,11 @@ class MovieTMDBApi
 
     public function getMovie(string $id)
     {
-        $movie = $this->getTMDBMovie(['i' => $id]);
-
-
-        return $movie;
+        return $this->getTMDBMovie($id);
     }
 
-    public function getTMDBMovie(array $filterParams): ?array
+    public function getTMDBMovie(int $id): ?array
     {
-        return $this->service->request('get', $filterParams);
+        return $this->service->request('get', 'movie/' . $id);
     }
 }

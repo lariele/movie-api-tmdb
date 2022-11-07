@@ -14,6 +14,12 @@ return new class extends Migration {
     {
         Schema::create('api_tmdb_movies', function (Blueprint $table) {
             $table->id();
+            $table->boolean('adult');
+            $table->string('backdrop_path')->nullable();
+            $table->text('genres');
+
+            $table->bigInteger('tmdb_id')->index();
+            $table->string('imdb_id')->nullable();
             $table->string('title')->index();
             $table->timestamp('processed_at')->index()->nullable();
 

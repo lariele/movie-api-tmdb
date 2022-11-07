@@ -17,16 +17,19 @@ class MovieTMDBRestService
     {
         $this->config = $config;
         $this->httpClient = $httpClient;
-
-
-        $this->httpClient->withApiKey($this->config->getApiKey());
     }
 
-    public function request(string $method, ?array $body = []): ?array
+    public function request(string $method, $withUri = null, ?array $body = []): ?array
     {
         $this->method = $method;
         $this->url = $this->config->getRestUrl();
+        if ($withUri) {
+            $this->url .= $withUri;
+        }
+
         $this->setEndpointParams($body);
+
+        $this->withApiKey($this->config->getApiKey());
 
         $json = $this->send();
 
@@ -41,6 +44,15 @@ class MovieTMDBRestService
         }
 
         return $this;
+    }
+
+    public function withApiKey(?string $apiKey): void
+    {
+        if (!empty($apiKey)) {
+            $this->setEndpointParams([
+                'api_key' => $apiKey,
+            ]);
+        }
     }
 
     private function send(): ?array
@@ -59,7 +71,6 @@ class MovieTMDBRestService
         return $json;
     }
 
-
     private function prepareResponse(?array $json): ?array
     {
         $json = $json ?? null;
@@ -69,5 +80,10 @@ class MovieTMDBRestService
         }
 
         return $json;
+    }
+
+    public function withHeaders(array $headers): void
+    {
+        $this->httpClient->withHeaders($headers);
     }
 }

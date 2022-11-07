@@ -34,36 +34,35 @@ class GetMovieCommand extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
+    {
+        for ($i = 0; $i < 3; $i++) {
+            $this->getMovie();
+            sleep(2);
+        }
+
+        return Command::SUCCESS;
+    }
+
+    private function getMovie()
     {
         $this->info('Get TMDB movie');
 
-        $checkId = '';
-        exit();
-        $rs = (string)rand(12585152, 12595152);
-        #$rs = '7631066';
 
-        $checkId = 'tt' . $rs;
-        #$movieToCheck = 'tt5180504';
-        $ids = [
-            'tt13207736',
-            'tt1877830',
-            'tt5523010',
-            'tt12585152',
-        ];
-
-        #$checkId = $ids[rand(0, (count($ids)))];
+        $checkId = rand(1, 6000);
 
         $movieToCheck = $checkId;
 
-        Log::debug('movie to check', [$movieToCheck]);
+        Log::channel('import')->debug('movie to check ' . $movieToCheck);
+
         $movie = $this->movieApi->getMovie($movieToCheck);
 
+        Log::channel('import')->debug('movie ', [$movie]);
+
         if (isset($movie['title'])) {
+            $movie['tmdb_id'] = $movie['id'];
+            unset($movie['id']);
             TMDBMovie::query()->create($movie);
         }
-
-        Log::debug('movie', [$movie]);
-        return Command::SUCCESS;
     }
 }

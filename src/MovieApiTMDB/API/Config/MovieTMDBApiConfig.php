@@ -10,9 +10,9 @@ class MovieTMDBApiConfig
     public function __construct()
     {
         #$this->url = config('app.coin_ranking_api_url');
-        $this->url = 'https://mdblist.p.rapidapi.com';
+        $this->url = 'https://api.themoviedb.org/3/';
         #$this->apiKey = config('app.coin_ranking_api_key');
-        $this->apiKey = 'ff9e3c1ea0mshf9363246696e0d8p1069e4jsn5489664f3c01';
+        $this->apiKey = '24b4b3e2b052efb2f28b3c9315d98232';
     }
 
     public function getApiKey(): string

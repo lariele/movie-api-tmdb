@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Lariele\Movie\Models\TMDBMovie;
+use Lariele\MovieApiTMDB\Models\TMDBMovie;
 
 class MovieSeeder extends Seeder
 {
