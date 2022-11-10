@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Lariele\MovieApiTMDB\API\MovieTMDBApi;
 use Lariele\MovieApiTMDB\Models\TMDBMovie;
 
-class GetMovieCreditsCommand extends Command
+class GetMovieWatchProvidersCommand extends Command
 {
     protected MovieTMDBApi $movieApi;
     /**
@@ -15,7 +15,7 @@ class GetMovieCreditsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'movie-api-tmdb:get-movie-credits {tmdbId}';
+    protected $signature = 'movie-api-tmdb:get-movie-providers {tmdbId}';
     /**
      * The console command description.
      *
@@ -38,26 +38,27 @@ class GetMovieCreditsCommand extends Command
     {
         $tmdbId = $this->argument('tmdbId');
 
-        $this->getMovieCredits($tmdbId);
+        $this->getMovieProviders($tmdbId);
         return Command::SUCCESS;
     }
 
-    private function getMovieCredits($tmdbId)
+    private function getMovieProviders($tmdbId)
     {
         $movie = TMDBMovie::query()->where(['tmdb_id' => $tmdbId])->firstOrFail();
 
-        $this->info('Get TMDB credits ' . $tmdbId);
-        Log::channel('import')->debug('Get TMDB credits ' . $tmdbId);
+        $this->info('Get TMDB providers ' . $tmdbId);
+        Log::channel('import')->debug('Get TMDB providers ' . $tmdbId);
 
-        $movieCredits = $this->movieApi->getMovieCredits($tmdbId);
 
-        Log::channel('import')->debug('Movie credits ', [$movieCredits]);
+        $movieProviders = $this->movieApi->getMovieWatchProviders($tmdbId);
 
-        if (isset($movieCredits['cast']) || isset($movieCredits['crew'])) {
-            $this->info('Update credits ' . $movie['title']);
-            Log::channel('import')->debug('Update credits ', [$movie['title']]);
+        Log::channel('import')->debug('Movie providers ', [$movieProviders]);
 
-            $movie->persons()->create($movieCredits);
+        if (isset($movieProviders['results'])) {
+            $this->info('Update providers ' . $movie['title']);
+            Log::channel('import')->debug('Update providers ', [$movie['title']]);
+
+            $movie->providers()->create($movieProviders);
         }
     }
 }

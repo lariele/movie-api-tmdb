@@ -72,7 +72,7 @@ class GetMovieCommand extends Command
             $createdMovie->data()->create($movie);
 
             MDBLCreated::dispatch($movie['imdb_id']);
-            Created::dispatch($movie['imdb_id']);
+            Created::dispatch($movie['tmdb_id']);
         }
     }
 }

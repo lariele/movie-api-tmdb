@@ -12,11 +12,10 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('api_tmdb_movies_actress', function (Blueprint $table) {
-            $table->id();
+        Schema::create('api_tmdb_movies_providers', function (Blueprint $table) {
+            $table->id('tmdb_id');
 
-            $table->text('cast');
-            $table->text('crew');
+            $table->text('results');
 
             $table->timestamp('processed_at')->index()->nullable();
 
@@ -31,6 +30,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('api_tmdb_movies');
+        Schema::dropIfExists('api_tmdb_movies_providers');
     }
 };

@@ -5,6 +5,7 @@ namespace Lariele\MovieApiTMDB;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Lariele\MovieApiTMDB\Events\Created;
 use Lariele\MovieApiTMDB\Listeners\CheckMoviePerson;
+use Lariele\MovieApiTMDB\Listeners\CheckMovieProviders;
 
 class MovieApiTMDBEventServiceProvider extends ServiceProvider
 {
@@ -16,6 +17,7 @@ class MovieApiTMDBEventServiceProvider extends ServiceProvider
     protected $listen = [
         Created::class => [
             CheckMoviePerson::class,
+            CheckMovieProviders::class,
         ],
     ];
 

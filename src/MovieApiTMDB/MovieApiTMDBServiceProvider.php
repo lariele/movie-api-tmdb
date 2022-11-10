@@ -5,6 +5,7 @@ namespace Lariele\MovieApiTMDB;
 use Illuminate\Support\ServiceProvider;
 use Lariele\MovieApiTMDB\Commands\GetMovieCommand;
 use Lariele\MovieApiTMDB\Commands\GetMovieCreditsCommand;
+use Lariele\MovieApiTMDB\Commands\GetMovieWatchProvidersCommand;
 
 #use Lariele\MovieApiTMDB\Components\List\MovieList;
 #use Lariele\MovieApiTMDB\Components\List\MovieListRow;
@@ -32,6 +33,7 @@ class MovieApiTMDBServiceProvider extends ServiceProvider
             $this->commands([
                 GetMovieCommand::class,
                 GetMovieCreditsCommand::class,
+                GetMovieWatchProvidersCommand::class,
             ]);
         }
 

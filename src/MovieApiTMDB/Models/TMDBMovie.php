@@ -29,4 +29,24 @@ class TMDBMovie extends Model
     {
         return $this->hasOne(TMDBMovieData::class, 'tmdb_id', 'tmdb_id');
     }
+
+    /**
+     * Movie Persons
+     *
+     * @return HasOne
+     */
+    public function persons(): HasOne
+    {
+        return $this->hasOne(TMDBMoviePersons::class, 'tmdb_id', 'tmdb_id');
+    }
+
+    /**
+     * Movie Providers
+     *
+     * @return HasOne
+     */
+    public function providers(): HasOne
+    {
+        return $this->hasOne(TMDBMovieProviders::class, 'tmdb_id', 'tmdb_id');
+    }
 }

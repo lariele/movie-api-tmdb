@@ -21,4 +21,9 @@ class MovieTMDBApi
         return $this->service->request('get', 'movie/' . $id . '/credits');
     }
 
+    public function getMovieWatchProviders(string $id): ?array
+    {
+        return $this->service->request('get', 'movie/' . $id . '/watch/providers');
+    }
+
 }
