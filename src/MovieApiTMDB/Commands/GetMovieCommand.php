@@ -4,7 +4,9 @@ namespace Lariele\MovieApiTMDB\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Lariele\MovieApiMDBL\Events\Created as MDBLCreated;
 use Lariele\MovieApiTMDB\API\MovieTMDBApi;
+use Lariele\MovieApiTMDB\Events\Created;
 use Lariele\MovieApiTMDB\Models\TMDBMovie;
 
 class GetMovieCommand extends Command
@@ -38,7 +40,7 @@ class GetMovieCommand extends Command
     {
         for ($i = 0; $i < 3; $i++) {
             $this->getMovie();
-            sleep(2);
+            sleep(rand(2, 6));
         }
 
         return Command::SUCCESS;
@@ -46,23 +48,31 @@ class GetMovieCommand extends Command
 
     private function getMovie()
     {
-        $this->info('Get TMDB movie');
-
-
         $checkId = rand(1, 6000);
 
         $movieToCheck = $checkId;
 
-        Log::channel('import')->debug('movie to check ' . $movieToCheck);
+        $this->info('Get TMDB movie ' . $movieToCheck);
+        Log::channel('import')->debug('Get TMDB movie ' . $movieToCheck);
 
         $movie = $this->movieApi->getMovie($movieToCheck);
 
-        Log::channel('import')->debug('movie ', [$movie]);
+        Log::channel('import')->debug('Movie data ', [$movie]);
 
         if (isset($movie['title'])) {
+            $this->info('Update movie ' . $movie['title']);
+            Log::channel('import')->debug('Update movie ', [$movie['title']]);
+
             $movie['tmdb_id'] = $movie['id'];
             unset($movie['id']);
-            TMDBMovie::query()->create($movie);
+
+            $createdMovie = TMDBMovie::query()->create($movie);
+            unset($createdMovie['id']);
+
+            $createdMovie->data()->create($movie);
+
+            MDBLCreated::dispatch($movie['imdb_id']);
+            Created::dispatch($movie['imdb_id']);
         }
     }
 }

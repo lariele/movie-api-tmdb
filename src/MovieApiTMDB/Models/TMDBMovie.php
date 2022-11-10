@@ -4,6 +4,7 @@ namespace Lariele\MovieApiTMDB\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TMDBMovie extends Model
 {
@@ -12,18 +13,20 @@ class TMDBMovie extends Model
     protected $table = 'api_tmdb_movies';
 
     protected $fillable = [
-        'adult',
-        'backdrop_path',
-        'genres',
         'tmdb_id',
         'imdb_id',
+        'release_date',
+        'status',
         'title',
-        'processed_at',
-
     ];
 
-    protected $casts = [
-        'genres' => 'collection',
-    ];
-
+    /**
+     * Movie Data
+     *
+     * @return HasOne
+     */
+    public function data(): HasOne
+    {
+        return $this->hasOne(TMDBMovieData::class, 'tmdb_id', 'tmdb_id');
+    }
 }

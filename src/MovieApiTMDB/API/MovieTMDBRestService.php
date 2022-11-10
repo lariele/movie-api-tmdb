@@ -3,6 +3,7 @@
 namespace Lariele\MovieApiTMDB\API;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Lariele\MovieApiTMDB\API\Config\MovieTMDBApiConfig;
 
 class MovieTMDBRestService
@@ -30,7 +31,7 @@ class MovieTMDBRestService
         $this->setEndpointParams($body);
 
         $this->withApiKey($this->config->getApiKey());
-
+        Log::debug('tmdb request', [$this->url]);
         $json = $this->send();
 
         return $this->prepareResponse($json);

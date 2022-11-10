@@ -11,13 +11,14 @@ class MovieTMDBApi
         $this->service = $service;
     }
 
-    public function getMovie(string $id)
-    {
-        return $this->getTMDBMovie($id);
-    }
-
-    public function getTMDBMovie(int $id): ?array
+    public function getMovie(string $id): ?array
     {
         return $this->service->request('get', 'movie/' . $id);
     }
+
+    public function getMovieCredits(string $id): ?array
+    {
+        return $this->service->request('get', 'movie/' . $id . '/credits');
+    }
+
 }

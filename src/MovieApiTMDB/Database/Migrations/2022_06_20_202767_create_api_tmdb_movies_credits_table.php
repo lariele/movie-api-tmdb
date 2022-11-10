@@ -12,15 +12,12 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('api_tmdb_movies', function (Blueprint $table) {
+        Schema::create('api_tmdb_movies_actress', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger('tmdb_id')->index();
-            $table->string('imdb_id')->index();
-            $table->string('release_date');
-            $table->string('status')->nullable();
-            $table->string('title')->nullable();
-            
+            $table->text('cast');
+            $table->text('crew');
+
             $table->timestamp('processed_at')->index()->nullable();
 
             $table->timestamps();

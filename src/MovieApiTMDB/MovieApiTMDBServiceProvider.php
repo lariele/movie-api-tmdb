@@ -4,6 +4,7 @@ namespace Lariele\MovieApiTMDB;
 
 use Illuminate\Support\ServiceProvider;
 use Lariele\MovieApiTMDB\Commands\GetMovieCommand;
+use Lariele\MovieApiTMDB\Commands\GetMovieCreditsCommand;
 
 #use Lariele\MovieApiTMDB\Components\List\MovieList;
 #use Lariele\MovieApiTMDB\Components\List\MovieListRow;
@@ -17,7 +18,7 @@ class MovieApiTMDBServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->register(MovieApiTMDBEventServiceProvider::class);
     }
 
     /**
@@ -30,6 +31,7 @@ class MovieApiTMDBServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 GetMovieCommand::class,
+                GetMovieCreditsCommand::class,
             ]);
         }
 
