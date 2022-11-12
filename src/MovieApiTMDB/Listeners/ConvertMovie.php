@@ -5,7 +5,7 @@ namespace Lariele\MovieApiTMDB\Listeners;
 use Illuminate\Support\Facades\Artisan;
 use Lariele\MovieApiTMDB\Events\Created;
 
-class CheckMoviePerson
+class ConvertMovie
 {
     /**
      * Create the event listener.
@@ -25,6 +25,6 @@ class CheckMoviePerson
      */
     public function handle(Created $event)
     {
-        Artisan::call('movie-api-tmdb:get-movie-credits', ['tmdbId' => $event->tmdbId]);
+        Artisan::call('movie-api-tmdb:convert-movie', ['tmdbId' => $event->tmdbId]);
     }
 }

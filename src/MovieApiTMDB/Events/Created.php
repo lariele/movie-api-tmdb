@@ -2,13 +2,14 @@
 
 namespace Lariele\MovieApiTMDB\Events;
 
-use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 
-class Created
+class Created implements ShouldQueue
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     public string $tmdbId;
 

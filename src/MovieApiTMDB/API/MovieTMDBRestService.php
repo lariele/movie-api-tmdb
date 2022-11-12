@@ -27,13 +27,21 @@ class MovieTMDBRestService
             $this->url .= $withUri;
         }
 
+        $body = $this->withApiKey($this->config->getApiKey(), $body);
         $this->setEndpointParams($body);
-
-        $this->withApiKey($this->config->getApiKey());
 
         $json = $this->send();
 
         return $this->prepareResponse($json);
+    }
+
+    public function withApiKey(?string $apiKey, $body)
+    {
+        if (!empty($apiKey)) {
+            $body['api_key'] = $apiKey;
+        }
+
+        return $body;
     }
 
     public function setEndpointParams(?array $params = []): self
@@ -44,15 +52,6 @@ class MovieTMDBRestService
         }
 
         return $this;
-    }
-
-    public function withApiKey(?string $apiKey): void
-    {
-        if (!empty($apiKey)) {
-            $this->setEndpointParams([
-                'api_key' => $apiKey,
-            ]);
-        }
     }
 
     private function send(): ?array

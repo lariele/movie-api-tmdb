@@ -13,14 +13,14 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('api_tmdb_movies', function (Blueprint $table) {
-            $table->id();
+            $table->id('tmdb_id');
 
-            $table->bigInteger('tmdb_id')->index();
-            $table->string('imdb_id')->index();
-            $table->string('release_date');
+            #$table->bigInteger('tmdb_id')->index();
+            $table->string('imdb_id')->nullable()->index();
+            $table->date('release_date')->nullable();
             $table->string('status')->nullable();
             $table->string('title')->nullable();
-            
+
             $table->timestamp('processed_at')->index()->nullable();
 
             $table->timestamps();

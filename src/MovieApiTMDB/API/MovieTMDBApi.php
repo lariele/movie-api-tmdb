@@ -13,7 +13,7 @@ class MovieTMDBApi
 
     public function getMovie(string $id): ?array
     {
-        return $this->service->request('get', 'movie/' . $id);
+        return $this->service->request('get', 'movie/' . $id, ['append_to_response' => 'images,videos,credits,external_ids']);
     }
 
     public function getMovieCredits(string $id): ?array

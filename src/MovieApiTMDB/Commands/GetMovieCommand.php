@@ -38,9 +38,9 @@ class GetMovieCommand extends Command
      */
     public function handle(): int
     {
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             $this->getMovie();
-            sleep(rand(2, 6));
+            sleep(1);
         }
 
         return Command::SUCCESS;
@@ -48,7 +48,7 @@ class GetMovieCommand extends Command
 
     private function getMovie()
     {
-        $checkId = rand(1, 6000);
+        $checkId = rand(1, 600000);
 
         $movieToCheck = $checkId;
 
@@ -57,7 +57,7 @@ class GetMovieCommand extends Command
 
         $movie = $this->movieApi->getMovie($movieToCheck);
 
-        Log::channel('import')->debug('Movie data ', [$movie]);
+        //Log::channel('import')->debug('Movie data ', [$movie]);
 
         if (isset($movie['title'])) {
             $this->info('Update movie ' . $movie['title']);
@@ -71,8 +71,10 @@ class GetMovieCommand extends Command
 
             $createdMovie->data()->create($movie);
 
-            MDBLCreated::dispatch($movie['imdb_id']);
-            Created::dispatch($movie['tmdb_id']);
+            if (isset($movie['imdb_id'])) {
+                MDBLCreated::dispatch($movie['imdb_id']);
+                Created::dispatch($movie['tmdb_id']);
+            }
         }
     }
 }

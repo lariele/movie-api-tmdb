@@ -3,12 +3,10 @@
 namespace Lariele\MovieApiTMDB;
 
 use Illuminate\Support\ServiceProvider;
+use Lariele\MovieApiTMDB\Commands\ConvertMovieCommand;
 use Lariele\MovieApiTMDB\Commands\GetMovieCommand;
 use Lariele\MovieApiTMDB\Commands\GetMovieCreditsCommand;
 use Lariele\MovieApiTMDB\Commands\GetMovieWatchProvidersCommand;
-
-#use Lariele\MovieApiTMDB\Components\List\MovieList;
-#use Lariele\MovieApiTMDB\Components\List\MovieListRow;
 
 class MovieApiTMDBServiceProvider extends ServiceProvider
 {
@@ -32,8 +30,8 @@ class MovieApiTMDBServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 GetMovieCommand::class,
-                GetMovieCreditsCommand::class,
                 GetMovieWatchProvidersCommand::class,
+                ConvertMovieCommand::class,
             ]);
         }
 
@@ -48,11 +46,5 @@ class MovieApiTMDBServiceProvider extends ServiceProvider
         ]);
 
         $this->loadMigrationsFrom(__DIR__ . '/Database/Migrations');
-
-        #Livewire::component('order-list-filter', OrderListFilter::class);
-//        Livewire::component('movie-list',MovieList::class);
-//        Livewire::component('movie-list-row',MovieListRow::class);
-//        Livewire::component('order-search', Search::class);
-        //
     }
 }

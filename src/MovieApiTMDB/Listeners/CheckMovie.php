@@ -2,7 +2,6 @@
 
 namespace Lariele\MovieApiTMDB\Listeners;
 
-use Illuminate\Support\Facades\Log;
 use Lariele\MovieApiTMDB\Events\Created;
 
 class CheckMovie
@@ -14,7 +13,6 @@ class CheckMovie
      */
     public function __construct()
     {
-        #Log::debug('check movie constr');
         //
     }
 
@@ -26,7 +24,6 @@ class CheckMovie
      */
     public function handle(Created $event)
     {
-        #Artisan::call('movie-api-mdbl:get-movie', ['imdbId' => $event->imdbId]);
-        Log::debug('TMDB check moviee ' . $event->imdbId);
+        Artisan::call('movie-api-mdbl:get-movie');
     }
 }

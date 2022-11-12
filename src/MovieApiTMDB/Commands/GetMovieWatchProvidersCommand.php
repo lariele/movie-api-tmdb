@@ -49,10 +49,9 @@ class GetMovieWatchProvidersCommand extends Command
         $this->info('Get TMDB providers ' . $tmdbId);
         Log::channel('import')->debug('Get TMDB providers ' . $tmdbId);
 
-
         $movieProviders = $this->movieApi->getMovieWatchProviders($tmdbId);
 
-        Log::channel('import')->debug('Movie providers ', [$movieProviders]);
+        //Log::channel('import')->debug('Movie providers ', [$movieProviders]);
 
         if (isset($movieProviders['results'])) {
             $this->info('Update providers ' . $movie['title']);

@@ -13,9 +13,9 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('api_tmdb_movies_providers', function (Blueprint $table) {
-            $table->id('tmdb_id');
+            $table->foreignId('tmdb_id')->references('tmdb_id')->on('api_tmdb_movies')->cascadeOnDelete();
 
-            $table->text('results');
+            $table->longText('results');
 
             $table->timestamp('processed_at')->index()->nullable();
 

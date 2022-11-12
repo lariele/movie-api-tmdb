@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class TMDBMovie extends Model
 {
     use HasFactory;
+    
+    protected $primaryKey = 'tmdb_id';
 
     protected $table = 'api_tmdb_movies';
 
@@ -18,6 +20,15 @@ class TMDBMovie extends Model
         'release_date',
         'status',
         'title',
+        'processed_at',
+    ];
+
+    protected $dates = [
+        'processed_at'
+    ];
+
+    protected $casts = [
+        'release_date' => 'datetime:Y-m-d',
     ];
 
     /**
