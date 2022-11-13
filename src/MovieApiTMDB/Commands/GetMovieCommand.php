@@ -3,15 +3,14 @@
 namespace Lariele\MovieApiTMDB\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use Lariele\MovieApiMDBL\Events\Created as MDBLCreated;
 use Lariele\MovieApiTMDB\API\MovieTMDBApi;
-use Lariele\MovieApiTMDB\Events\Created;
-use Lariele\MovieApiTMDB\Models\TMDBMovie;
+use Lariele\MovieApiTMDB\Services\MovieApiTMDBImportService;
 
 class GetMovieCommand extends Command
 {
     protected MovieTMDBApi $movieApi;
+    protected MovieApiTMDBImportService $movieApiTMDBImportService;
+
     /**
      * The name and signature of the console command.
      *
@@ -25,9 +24,9 @@ class GetMovieCommand extends Command
      */
     protected $description = 'Command description';
 
-    public function __construct(MovieTMDBApi $movieApi)
+    public function __construct(MovieApiTMDBImportService $movieApiTMDBImportService)
     {
-        $this->movieApi = $movieApi;
+        $this->movieApiTMDBImportService = $movieApiTMDBImportService;
         parent::__construct();
     }
 
@@ -38,7 +37,7 @@ class GetMovieCommand extends Command
      */
     public function handle(): int
     {
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $this->getMovie();
             sleep(1);
         }
@@ -49,32 +48,9 @@ class GetMovieCommand extends Command
     private function getMovie()
     {
         $checkId = rand(1, 600000);
-
+        //$checkId = 603;
         $movieToCheck = $checkId;
 
-        $this->info('Get TMDB movie ' . $movieToCheck);
-        Log::channel('import')->debug('Get TMDB movie ' . $movieToCheck);
-
-        $movie = $this->movieApi->getMovie($movieToCheck);
-
-        //Log::channel('import')->debug('Movie data ', [$movie]);
-
-        if (isset($movie['title'])) {
-            $this->info('Update movie ' . $movie['title']);
-            Log::channel('import')->debug('Update movie ', [$movie['title']]);
-
-            $movie['tmdb_id'] = $movie['id'];
-            unset($movie['id']);
-
-            $createdMovie = TMDBMovie::query()->create($movie);
-            unset($createdMovie['id']);
-
-            $createdMovie->data()->create($movie);
-
-            if (isset($movie['imdb_id'])) {
-                MDBLCreated::dispatch($movie['imdb_id']);
-                Created::dispatch($movie['tmdb_id']);
-            }
-        }
+        $this->movieApiTMDBImportService->getMovie($movieToCheck);
     }
 }

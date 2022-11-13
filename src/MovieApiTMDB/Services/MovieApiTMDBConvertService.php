@@ -10,7 +10,9 @@ use Lariele\MovieApiTMDB\Models\TMDBMovie;
 
 class MovieApiTMDBConvertService
 {
-    public function __construct(private MovieConvertHelperService $movieConvertHelper)
+    private MovieConvertHelperService $movieConvertHelper;
+
+    public function __construct()
     {
         //
     }
@@ -24,18 +26,28 @@ class MovieApiTMDBConvertService
     public function convertMovie(TMDBMovie $tmdbMovie)
     {
         $movieData['name'] = $tmdbMovie->title;
-        $movieData['year'] = $tmdbMovie->release_date->year;
+        $movieData['year'] = $tmdbMovie->release_date ? $tmdbMovie->release_date->year : null;
 
         Log::channel('convert')->debug('Converted data ', [$movieData]);
 
         $movie = Movie::query()->create($movieData);
 
+        $this->movieConvertHelper = (new MovieConvertHelperService($movie));
+
         $movie->data()->create([
-            'release_date' => $tmdbMovie->release_date,
+            'release_date' => strlen($tmdbMovie->release_date) > 0 ? $tmdbMovie->release_date : null,
             'duration' => $tmdbMovie->data->runtime,
         ]);
 
         $this->convertMovieCreators($movie, $tmdbMovie);
+
+        $this->convertMovieCategories($tmdbMovie);
+
+        $this->convertMovieTags($tmdbMovie);
+
+        $this->convertMovieCountries($tmdbMovie);
+
+        $this->convertMoviePoster($tmdbMovie);
 
         $tmdbMovie->update([
             'processed_at' => Carbon::now(),
@@ -50,56 +62,72 @@ class MovieApiTMDBConvertService
      */
     public function convertMovieCreators(Movie $movie, TMDBMovie $tmdbMovie)
     {
-        /**
-         * Actress
-         */
-        $this->movieConvertHelper->setCreators($movie->actress(), [0 => 'Tester']);
+        $actors = $tmdbMovie->data->credits['cast'] ? collect($tmdbMovie->data->credits['cast'])->pluck('name') : null;
 
+        $this->movieConvertHelper->setCreators($movie->actress(), $actors);
 
-        exit();
-        /**
-         * Directors
-         */
-        $this->helper->setCreators($this->movie->directors(), $this->botItem->data->directors);
+        //$this->movieConvertHelper->setCreators($movie->directors(), $actors);
+        return;
 
-        /**
-         * Artwork
-         */
-        $this->helper->setCreators($this->movie->artwork(), $this->botItem->data->artwork);
+//        $this->helper->setCreators($this->movie->directors(), $this->botItem->data->directors);
+//
+//        $this->helper->setCreators($this->movie->artwork(), $this->botItem->data->artwork);
+//
+//        $this->helper->setCreators($this->movie->script(), $this->botItem->data->script);
+//
+//        $this->helper->setCreators($this->movie->camera(), $this->botItem->data->camera);
+//
+//        $this->helper->setCreators($this->movie->music(), $this->botItem->data->music);
+//
+//        $this->helper->setCreators($this->movie->producers(), $this->botItem->data->producers);
+//
+//        $this->helper->setCreators($this->movie->edit(), $this->botItem->data->edit);
+//
+//        $this->helper->setCreators($this->movie->production(), $this->botItem->data->production);
+//
+//        $this->helper->setCreators($this->movie->costumes(), $this->botItem->data->costumes);
+    }
 
-        /**
-         * Script
-         */
-        $this->helper->setCreators($this->movie->script(), $this->botItem->data->script);
+    /**
+     * Movie Categories
+     *
+     * @param TMDBMovie $tmdbMovie
+     * @return void
+     */
+    public function convertMovieCategories(TMDBMovie $tmdbMovie)
+    {
+        $categories = $tmdbMovie->data->genres ? collect($tmdbMovie->data->genres)->pluck('name') : null;
 
-        /**
-         * Camera
-         */
-        $this->helper->setCreators($this->movie->camera(), $this->botItem->data->camera);
+        $this->movieConvertHelper->setCategories($categories);
+    }
 
-        /**
-         * Music
-         */
-        $this->helper->setCreators($this->movie->music(), $this->botItem->data->music);
+    /**
+     * Movie Tags
+     *
+     * @param TMDBMovie $tmdbMovie
+     * @return void
+     */
+    public function convertMovieTags(TMDBMovie $tmdbMovie)
+    {
+        $tags = $tmdbMovie->data->keywords ? collect($tmdbMovie->data->keywords['keywords'])->pluck('name') : null;
 
-        /**
-         * Producers
-         */
-        $this->helper->setCreators($this->movie->producers(), $this->botItem->data->producers);
+        $this->movieConvertHelper->setTags($tags);
+    }
 
-        /**
-         * Edit
-         */
-        $this->helper->setCreators($this->movie->edit(), $this->botItem->data->edit);
+    /**
+     * Creators
+     */
+    public function convertMovieCountries(TMDBMovie $tmdbMovie)
+    {
+        $countries = $tmdbMovie->data->production_countries ? collect($tmdbMovie->data->production_countries)->pluck('name') : null;
 
-        /**
-         * Production
-         */
-        $this->helper->setCreators($this->movie->production(), $this->botItem->data->production);
+        $this->movieConvertHelper->setCountries($countries);
+    }
 
-        /**
-         * Costumes
-         */
-        $this->helper->setCreators($this->movie->costumes(), $this->botItem->data->costumes);
+    public function convertMoviePoster(TMDBMovie $tmdbMovie)
+    {
+        if (!empty($tmdbMovie->data->poster_path)) {
+            $this->movieConvertHelper->setPoster('https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->poster_path);
+        }
     }
 }

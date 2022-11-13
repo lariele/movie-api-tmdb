@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('api_tmdb_movies_data', function (Blueprint $table) {
-            $table->foreignId('tmdb_id')->references('tmdb_id')->on('api_tmdb_movies')->cascadeOnDelete();
+            $table->foreignId('tmdb_id')->unique()->references('tmdb_id')->on('api_tmdb_movies')->cascadeOnDelete();
             #$table->foreign('tmdb_id')->references('tmdb_id')->on('api_tmdb_movies')->cascadeOnDelete();
 
             $table->boolean('adult');
@@ -41,6 +41,7 @@ return new class extends Migration {
             $table->float('vote_average');
             $table->integer('vote_count');
 
+            $table->text('keywords')->nullable();
             $table->text('videos')->nullable();
             $table->text('images');
             $table->longText('credits')->nullable();

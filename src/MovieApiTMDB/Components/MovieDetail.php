@@ -1,25 +1,25 @@
 <?php
 
-namespace Lariele\Movie\Components;
+namespace Lariele\MovieApiTMDB\Components;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Lariele\Movie\Models\Movie;
 use Livewire\Component;
-use Lapierre\Order\Models\Order;
 
 class MovieDetail extends Component
 {
-    public $order;
+    public $movie;
 
-    public function mount(Order $order)
+    public function mount(Movie $movie)
     {
-        $this->order = $order;
+        $this->movie = $movie;
         #$this->order = OrderModel::query()->where('id', $id)->firstOrFail();
     }
 
     public function render(): Factory|View|Application
     {
-        return view('order::components.order-detail');
+        return view('movie::components.movie-detail');
     }
 }

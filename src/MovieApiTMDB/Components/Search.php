@@ -1,11 +1,10 @@
 <?php
 
-namespace Lariele\Movie\Components;
+namespace Lariele\MovieApiTMDB\Components;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class Search extends Component
@@ -14,7 +13,8 @@ class Search extends Component
 
     public $results;
 
-    public function mount() {
+    public function mount()
+    {
         $this->results = collect([]);
     }
 

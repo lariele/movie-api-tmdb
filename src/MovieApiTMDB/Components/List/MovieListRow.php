@@ -1,6 +1,6 @@
 <?php
 
-namespace Lariele\Movie\Components\List;
+namespace Lariele\MovieApiTMDB\Components\List;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
