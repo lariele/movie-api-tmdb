@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('api_tmdb_movies_providers', function (Blueprint $table) {
-            $table->foreignId('tmdb_id')->references('tmdb_id')->on('api_tmdb_movies')->cascadeOnDelete();
+            $table->foreignId('tmdb_id')->unique()->references('tmdb_id')->on('api_tmdb_movies')->cascadeOnDelete();
 
             $table->longText('results');
 

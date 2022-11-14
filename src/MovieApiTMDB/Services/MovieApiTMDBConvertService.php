@@ -49,6 +49,8 @@ class MovieApiTMDBConvertService
 
         $this->convertMoviePoster($tmdbMovie);
 
+        $this->convertMovieProviders($tmdbMovie);
+
         $tmdbMovie->update([
             'processed_at' => Carbon::now(),
         ]);
@@ -124,10 +126,43 @@ class MovieApiTMDBConvertService
         $this->movieConvertHelper->setCountries($countries);
     }
 
+    /**
+     * Movie Poster
+     *
+     * @param TMDBMovie $tmdbMovie
+     * @return void
+     */
     public function convertMoviePoster(TMDBMovie $tmdbMovie)
     {
         if (!empty($tmdbMovie->data->poster_path)) {
             $this->movieConvertHelper->setPoster('https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->poster_path);
+        }
+    }
+
+    /**
+     * Watch Providers
+     *
+     * @param TMDBMovie $tmdbMovie
+     * @return void
+     */
+    public function convertMovieProviders(TMDBMovie $tmdbMovie)
+    {
+        if (!empty($tmdbMovie->providers) && !empty($tmdbMovie->providers->results)) {
+
+            foreach ($tmdbMovie->providers->results as $country) {
+                if (!empty($country)) {
+                    if (!empty($country['flatrate'])) {
+                        foreach ($country['flatrate'] as $provider) {
+                            Log::debug('provider ', [$provider['provider_name']]);
+                            $addProviders[] = $provider['provider_name'];
+                        }
+                    }
+                }
+            }
+
+            if (!empty($addProviders)) {
+                $this->movieConvertHelper->setProviders($addProviders);
+            }
         }
     }
 }
