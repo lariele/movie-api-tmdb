@@ -153,7 +153,6 @@ class MovieApiTMDBConvertService
                 if (!empty($country)) {
                     if (!empty($country['flatrate'])) {
                         foreach ($country['flatrate'] as $provider) {
-                            Log::debug('provider ', [$provider['provider_name']]);
                             $addProviders[] = $provider['provider_name'];
                         }
                     }

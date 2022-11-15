@@ -6,9 +6,9 @@ use Illuminate\Console\Command;
 use Lariele\MovieApiTMDB\API\MovieTMDBApi;
 use Lariele\MovieApiTMDB\Services\MovieApiTMDBImportService;
 
-class GetMovieCommand extends Command
+class GetMoviesDiscoverCommand extends Command
 {
-    protected MovieTMDBApi $movieTmdbApi;
+    protected MovieTMDBApi $movieApi;
     protected MovieApiTMDBImportService $movieApiTMDBImportService;
 
     /**
@@ -16,7 +16,7 @@ class GetMovieCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'movie-api-tmdb:get-movie {tmdbId}';
+    protected $signature = 'movie-api-tmdb:get-movies-discover';
     /**
      * The console command description.
      *
@@ -37,15 +37,15 @@ class GetMovieCommand extends Command
      */
     public function handle(): int
     {
-        $tmdbId = $this->argument('tmdbId');
-
-        $this->getMovie($tmdbId);
+        $this->getMoviesDiscover();
 
         return Command::SUCCESS;
     }
 
-    private function getMovie($tmdbId)
+    private function getMoviesDiscover()
     {
-        $this->movieApiTMDBImportService->getMovie($tmdbId);
+        $page = rand(1, 300);
+
+        $this->movieApiTMDBImportService->getMoviesDiscover($page);
     }
 }

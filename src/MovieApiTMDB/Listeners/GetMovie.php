@@ -3,9 +3,9 @@
 namespace Lariele\MovieApiTMDB\Listeners;
 
 use Illuminate\Support\Facades\Artisan;
-use Lariele\MovieApiTMDB\Events\Created;
+use Lariele\MovieApiTMDB\Events\Discovered;
 
-class CheckMovieProviders
+class GetMovie
 {
     /**
      * Create the event listener.
@@ -20,11 +20,11 @@ class CheckMovieProviders
     /**
      * Handle the event.
      *
-     * @param Created $event
+     * @param Discovered $event
      * @return void
      */
-    public function handle(Created $event)
+    public function handle(Discovered $event)
     {
-        Artisan::call('movie-api-tmdb:get-movie-providers', ['tmdbId' => $event->tmdbId]);
+        Artisan::call('movie-api-tmdb:get-movie', ['tmdbId' => $event->tmdbId]);
     }
 }

@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Log;
 use Lariele\MovieApiMDBL\Events\Created as MDBLCreated;
 use Lariele\MovieApiTMDB\API\MovieTMDBApi;
 use Lariele\MovieApiTMDB\Events\Created;
+use Lariele\MovieApiTMDB\Events\Discovered;
 use Lariele\MovieApiTMDB\Models\TMDBMovie;
+use Lariele\MovieApiTMDB\Models\TMDBMovieDiscover;
 
 class MovieApiTMDBImportService
 {
@@ -39,7 +41,6 @@ class MovieApiTMDBImportService
         }
 
         $this->saveMovie($movie);
-
     }
 
     public function saveMovie($movie)
@@ -58,6 +59,19 @@ class MovieApiTMDBImportService
         if (isset($movie['imdb_id'])) {
             MDBLCreated::dispatch($movie['imdb_id']);
             Created::dispatch($movie['tmdb_id']);
+        }
+    }
+
+    public function getMoviesDiscover($page = 0)
+    {
+        Log::channel('import')->debug('Get TMDB movies discover');
+
+        $body = ['page' => $page];
+        $movies = $this->movieApi->getMoviesDiscover($body);
+
+        foreach ($movies['results'] as $tmdbMovie) {
+            TMDBMovieDiscover::query()->create(['tmdb_id' => $tmdbMovie['id']]);
+            Discovered::dispatch($tmdbMovie['id']);
         }
     }
 }
