@@ -44,7 +44,7 @@ class GetMoviesDiscoverCommand extends Command
 
     private function getMoviesDiscover()
     {
-        $page = rand(1, 300);
+        $page = rand(1, 900);
 
         $this->movieApiTMDBImportService->getMoviesDiscover($page);
     }

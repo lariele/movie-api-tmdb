@@ -27,6 +27,7 @@ class MovieApiTMDBConvertService
     {
         $movieData['name'] = $tmdbMovie->title;
         $movieData['year'] = $tmdbMovie->release_date ? $tmdbMovie->release_date->year : null;
+        $movieData['rating'] = $tmdbMovie->data->vote_average;
 
         Log::channel('convert')->debug('Converted data ', [$movieData]);
 
@@ -34,10 +35,7 @@ class MovieApiTMDBConvertService
 
         $this->movieConvertHelper = (new MovieConvertHelperService($movie));
 
-        $movie->data()->create([
-            'release_date' => strlen($tmdbMovie->release_date) > 0 ? $tmdbMovie->release_date : null,
-            'duration' => $tmdbMovie->data->runtime,
-        ]);
+        $this->convertMovieData($tmdbMovie);
 
         $this->convertMovieCreators($movie, $tmdbMovie);
 
@@ -51,12 +49,30 @@ class MovieApiTMDBConvertService
 
         $this->convertMovieProviders($tmdbMovie);
 
+        $this->convertMovieExternals($tmdbMovie);
+
         $tmdbMovie->update([
             'processed_at' => Carbon::now(),
         ]);
 
 
         return $movie;
+    }
+
+    /**
+     * Movie Data
+     *
+     * @param TMDBMovie $tmdbMovie
+     * @return void
+     */
+    public function convertMovieData(TMDBMovie $tmdbMovie)
+    {
+        $data = [
+            'release_date' => strlen($tmdbMovie->release_date) > 0 ? $tmdbMovie->release_date : null,
+            'duration' => $tmdbMovie->data->runtime,
+        ];
+
+        $this->movieConvertHelper->setData($data);
     }
 
     /**
@@ -117,7 +133,7 @@ class MovieApiTMDBConvertService
     }
 
     /**
-     * Creators
+     * Countries
      */
     public function convertMovieCountries(TMDBMovie $tmdbMovie)
     {
@@ -135,6 +151,7 @@ class MovieApiTMDBConvertService
     public function convertMoviePoster(TMDBMovie $tmdbMovie)
     {
         if (!empty($tmdbMovie->data->poster_path)) {
+            Log::debug('poster path', ['https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->poster_path]);
             $this->movieConvertHelper->setPoster('https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->poster_path);
         }
     }
@@ -163,5 +180,21 @@ class MovieApiTMDBConvertService
                 $this->movieConvertHelper->setProviders($addProviders);
             }
         }
+    }
+
+    /**
+     * Externals
+     */
+    public function convertMovieExternals(TMDBMovie $tmdbMovie)
+    {
+        $external = [
+            'type' => 'tmdb',
+            'external_id' => $tmdbMovie->tmdb_id,
+            'name' => $tmdbMovie->title,
+        ];
+
+        $externals[] = $external;
+
+        $this->movieConvertHelper->setExternals($externals);
     }
 }

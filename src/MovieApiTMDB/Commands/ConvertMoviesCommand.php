@@ -3,10 +3,12 @@
 namespace Lariele\MovieApiTMDB\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Lariele\MovieApiTMDB\API\MovieTMDBApi;
+use Lariele\MovieApiTMDB\Models\TMDBMovie;
 use Lariele\MovieApiTMDB\Services\MovieApiTMDBImportService;
 
-class GetMovieRandomCommand extends Command
+class ConvertMoviesCommand extends Command
 {
     protected MovieTMDBApi $movieApi;
     protected MovieApiTMDBImportService $movieApiTMDBImportService;
@@ -16,7 +18,7 @@ class GetMovieRandomCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'movie-api-tmdb:get-movie-random';
+    protected $signature = 'movie-api-tmdb:convert-movies';
     /**
      * The console command description.
      *
@@ -24,9 +26,8 @@ class GetMovieRandomCommand extends Command
      */
     protected $description = 'Command description';
 
-    public function __construct(MovieApiTMDBImportService $movieApiTMDBImportService)
+    public function __construct()
     {
-        $this->movieApiTMDBImportService = $movieApiTMDBImportService;
         parent::__construct();
     }
 
@@ -37,20 +38,17 @@ class GetMovieRandomCommand extends Command
      */
     public function handle(): int
     {
-        for ($i = 0; $i < 10; $i++) {
-            $this->getMovie();
-            sleep(1);
-        }
+        $this->convertMovies();
 
         return Command::SUCCESS;
     }
 
-    private function getMovie()
+    private function convertMovies()
     {
-        $checkId = rand(1, 600000);
-        //$checkId = 603;
-        $movieToCheck = $checkId;
+        $movies = TMDBMovie::query()->whereNull('processed_at')->limit(1)->get();
 
-        $this->movieApiTMDBImportService->getMovie($movieToCheck);
+        foreach ($movies as $movie) {
+            Artisan::call('movie-api-tmdb:convert-movie', ['tmdbId' => $movie->tmdb_id]);
+        }
     }
 }

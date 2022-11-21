@@ -64,14 +64,16 @@ class MovieApiTMDBImportService
 
     public function getMoviesDiscover($page = 0)
     {
-        Log::channel('import')->debug('Get TMDB movies discover');
+        Log::channel('import')->debug('Get TMDB movies discover page ' . $page);
 
         $body = ['page' => $page];
         $movies = $this->movieApi->getMoviesDiscover($body);
-
-        foreach ($movies['results'] as $tmdbMovie) {
-            TMDBMovieDiscover::query()->create(['tmdb_id' => $tmdbMovie['id']]);
-            Discovered::dispatch($tmdbMovie['id']);
+        Log::debug('moviess', [$movies]);
+        if (!empty($movies['results'])) {
+            foreach ($movies['results'] as $tmdbMovie) {
+                TMDBMovieDiscover::query()->create(['tmdb_id' => $tmdbMovie['id']]);
+                Discovered::dispatch($tmdbMovie['id']);
+            }
         }
     }
 }
