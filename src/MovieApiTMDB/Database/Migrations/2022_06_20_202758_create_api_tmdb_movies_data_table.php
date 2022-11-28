@@ -31,7 +31,7 @@ return new class extends Migration {
 
             $table->text('production_companies');
             $table->text('production_countries');
-            $table->integer('revenue');
+            $table->bigInteger('revenue');
             $table->integer('runtime')->nullable();
 
             $table->text('spoken_languages');

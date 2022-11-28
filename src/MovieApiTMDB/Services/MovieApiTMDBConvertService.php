@@ -27,7 +27,7 @@ class MovieApiTMDBConvertService
     {
         $movieData['name'] = $tmdbMovie->title;
         $movieData['year'] = $tmdbMovie->release_date ? $tmdbMovie->release_date->year : null;
-        $movieData['rating'] = $tmdbMovie->data->vote_average;
+        $movieData['rating'] = $tmdbMovie->data->vote_average ?? null;
 
         Log::channel('convert')->debug('Converted data ', [$movieData]);
 
@@ -36,6 +36,8 @@ class MovieApiTMDBConvertService
         $this->movieConvertHelper = (new MovieConvertHelperService($movie));
 
         $this->convertMovieData($tmdbMovie);
+
+        $this->convertMovieDescriptions($tmdbMovie);
 
         $this->convertMovieCreators($movie, $tmdbMovie);
 
@@ -46,10 +48,13 @@ class MovieApiTMDBConvertService
         $this->convertMovieCountries($tmdbMovie);
 
         $this->convertMoviePoster($tmdbMovie);
+        $this->convertMovieBackdrop($tmdbMovie);
 
         $this->convertMovieProviders($tmdbMovie);
 
         $this->convertMovieExternals($tmdbMovie);
+
+        $this->convertMovieVideos($tmdbMovie);
 
         $tmdbMovie->update([
             'processed_at' => Carbon::now(),
@@ -73,6 +78,33 @@ class MovieApiTMDBConvertService
         ];
 
         $this->movieConvertHelper->setData($data);
+    }
+
+    /**
+     * Movie Data
+     *
+     * @param TMDBMovie $tmdbMovie
+     * @return void
+     */
+    public function convertMovieDescriptions(TMDBMovie $tmdbMovie)
+    {
+        if (!empty($tmdbMovie->data->overview)) {
+            $description = [
+                'description' => $tmdbMovie->data->overview,
+                'type' => 'def',
+            ];
+
+            $this->movieConvertHelper->setDescription($description);
+        }
+
+        if (!empty($tmdbMovie->data->tagline)) {
+            $description = [
+                'description' => $tmdbMovie->data->tagline,
+                'type' => 'short',
+            ];
+
+            $this->movieConvertHelper->setDescription($description);
+        }
     }
 
     /**
@@ -151,8 +183,20 @@ class MovieApiTMDBConvertService
     public function convertMoviePoster(TMDBMovie $tmdbMovie)
     {
         if (!empty($tmdbMovie->data->poster_path)) {
-            Log::debug('poster path', ['https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->poster_path]);
             $this->movieConvertHelper->setPoster('https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->poster_path);
+        }
+    }
+
+    /**
+     * Movie Backdrop
+     *
+     * @param TMDBMovie $tmdbMovie
+     * @return void
+     */
+    public function convertMovieBackdrop(TMDBMovie $tmdbMovie)
+    {
+        if (!empty($tmdbMovie->data->backdrop_path)) {
+            $this->movieConvertHelper->setBackdrop('https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->backdrop_path);
         }
     }
 
@@ -183,7 +227,7 @@ class MovieApiTMDBConvertService
     }
 
     /**
-     * Externals
+     * External
      */
     public function convertMovieExternals(TMDBMovie $tmdbMovie)
     {
@@ -196,5 +240,31 @@ class MovieApiTMDBConvertService
         $externals[] = $external;
 
         $this->movieConvertHelper->setExternals($externals);
+    }
+
+    /**
+     * Videos
+     */
+    public function convertMovieVideos(TMDBMovie $tmdbMovie)
+    {
+        $tmdbVideos = collect($tmdbMovie->data->videos['results']);
+
+        $videos = null;
+
+
+        foreach ($tmdbVideos as $tmdbVideo) {
+            if ($tmdbVideo['site'] == 'YouTube') {
+
+                $video = [
+                    'name' => $tmdbVideo['name'],
+                    'url' => $tmdbVideo['key'],
+                    'active' => true
+                ];
+
+                $videos[] = $video;
+            }
+        }
+
+        $this->movieConvertHelper->setVideos($videos);
     }
 }

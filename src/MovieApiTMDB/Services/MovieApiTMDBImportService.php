@@ -62,17 +62,23 @@ class MovieApiTMDBImportService
         }
     }
 
-    public function getMoviesDiscover($page = 0)
+    public function getMoviesDiscover($page = 0, $year = 2022)
     {
         Log::channel('import')->debug('Get TMDB movies discover page ' . $page);
 
         $body = ['page' => $page];
+        $body['year'] = $year;
+
         $movies = $this->movieApi->getMoviesDiscover($body);
-        Log::debug('moviess', [$movies]);
+
         if (!empty($movies['results'])) {
             foreach ($movies['results'] as $tmdbMovie) {
-                TMDBMovieDiscover::query()->create(['tmdb_id' => $tmdbMovie['id']]);
-                Discovered::dispatch($tmdbMovie['id']);
+                $exists = TMDBMovieDiscover::query()->where(['tmdb_id' => $tmdbMovie['id']])->exists();
+
+                if ($exists === false) {
+                    TMDBMovieDiscover::query()->create(['tmdb_id' => $tmdbMovie['id']]);
+                    Discovered::dispatch($tmdbMovie['id']);
+                }
             }
         }
     }

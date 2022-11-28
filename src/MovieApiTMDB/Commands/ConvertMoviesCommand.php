@@ -45,7 +45,7 @@ class ConvertMoviesCommand extends Command
 
     private function convertMovies()
     {
-        $movies = TMDBMovie::query()->whereNull('processed_at')->limit(1)->get();
+        $movies = TMDBMovie::query()->whereNull('processed_at')->limit(1000)->get();
 
         foreach ($movies as $movie) {
             Artisan::call('movie-api-tmdb:convert-movie', ['tmdbId' => $movie->tmdb_id]);
