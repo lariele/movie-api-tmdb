@@ -112,30 +112,12 @@ class MovieApiTMDBConvertService
      */
     public function convertMovieCreators(Movie $movie, TMDBMovie $tmdbMovie)
     {
-        $actors = $tmdbMovie->data->credits['cast'] ? collect($tmdbMovie->data->credits['cast'])->pluck('name') : null;
+        $credits = $tmdbMovie->data->credits['cast'] ? collect($tmdbMovie->data->credits['cast'])->pluck('name') : null;
 
+        $actors = $tmdbMovie->data->credits['cast'] ? collect($tmdbMovie->data->credits['cast'])->where('known_for_department', '=', 'Acting')->pluck('name') : null;
+
+        // known_for_department Acting
         $this->movieConvertHelper->setCreators($movie->actress(), $actors);
-
-        //$this->movieConvertHelper->setCreators($movie->directors(), $actors);
-        return;
-
-//        $this->helper->setCreators($this->movie->directors(), $this->botItem->data->directors);
-//
-//        $this->helper->setCreators($this->movie->artwork(), $this->botItem->data->artwork);
-//
-//        $this->helper->setCreators($this->movie->script(), $this->botItem->data->script);
-//
-//        $this->helper->setCreators($this->movie->camera(), $this->botItem->data->camera);
-//
-//        $this->helper->setCreators($this->movie->music(), $this->botItem->data->music);
-//
-//        $this->helper->setCreators($this->movie->producers(), $this->botItem->data->producers);
-//
-//        $this->helper->setCreators($this->movie->edit(), $this->botItem->data->edit);
-//
-//        $this->helper->setCreators($this->movie->production(), $this->botItem->data->production);
-//
-//        $this->helper->setCreators($this->movie->costumes(), $this->botItem->data->costumes);
     }
 
     /**

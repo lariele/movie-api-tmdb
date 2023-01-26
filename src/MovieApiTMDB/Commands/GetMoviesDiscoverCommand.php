@@ -49,9 +49,6 @@ class GetMoviesDiscoverCommand extends Command
 
     private function getMoviesDiscover()
     {
-        //Cache::put('movie_api_tmdb_lastpage', 0);
-        //Cache::put('movie_api_tmdb_lastyear', 2022);
-
         $pageLast = Cache::get('movie_api_tmdb_lastpage', 0);
         $yearLast = Cache::get('movie_api_tmdb_lastyear', 2022);
 

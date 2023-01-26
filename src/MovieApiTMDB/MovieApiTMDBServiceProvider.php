@@ -40,13 +40,21 @@ class MovieApiTMDBServiceProvider extends ServiceProvider
 
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
 
-        $this->loadViewsFrom(__DIR__ . '/Resources/views', 'movie-api-tmdbist');
+        $this->loadViewsFrom(__DIR__ . '/Resources/views', 'movie-api-tmdb');
+
         $this->publishes([
-            __DIR__ . '/Resources/views' => resource_path('views/vendor/lariele/movie-api-tmdbist'),
+            __DIR__ . '/Resources/views' => resource_path('views/vendor/lariele/movie-api-tmdb'),
+        ], 'views');
+
+        $this->publishes([
             __DIR__ . '/Database/Factories' => database_path('factories'),
             __DIR__ . '/Database/Migrations' => database_path('migrations'),
             __DIR__ . '/Database/Seeders' => database_path('seeders'),
-        ]);
+        ], 'database');
+
+        $this->publishes([
+            __DIR__ . '/Config/movieapi.php' => config_path('movieapi.php'),
+        ], 'config');
 
         $this->loadMigrationsFrom(__DIR__ . '/Database/Migrations');
     }
