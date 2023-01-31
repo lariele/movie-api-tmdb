@@ -35,7 +35,7 @@ php artisan vendor:publish --provider="Lariele\MovieApiTMDB\MovieApiTMDBServiceP
 php artisan vendor:publish --provider="Lariele\MovieApiTMDB\MovieApiTMDBServiceProvider" --tag=config
 ```
 
-#### Set your own API key in `config/movieapi.php`
+#### Add API key to env - MOVIEAPI_TMDB_KEY
 
 ## Import and convert movies from TMDB
 
