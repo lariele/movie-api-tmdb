@@ -1,6 +1,6 @@
 {
     "name": "lariele/movie-api-tmdb",
-    "description": "Import Movies from Rapid Api TMDBist.",
+    "description": "Import Movies from TMDB Api.",
     "keywords": [
         "Laravel",
         "M8M"
