@@ -1,12 +1,12 @@
 <?php
 
-namespace Lariele\Movie\Services;
+namespace App\SFD\Movie\Services;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 use Lapierre\Order\Models\Order;
 use LaravelIdea\Helper\Lapierre\Order\Models\_IH_Order_QB;
-use Lariele\Movie\Models\TMDBMovie;
+use App\SFD\Movie\Models\TMDBMovie;
 
 class MovieApiTMDBListService
 {

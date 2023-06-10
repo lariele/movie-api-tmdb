@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class TMDBMovie extends Model
 {
     use HasFactory;
-    
+
     protected $primaryKey = 'tmdb_id';
 
     protected $table = 'api_tmdb_movies';
@@ -59,5 +59,25 @@ class TMDBMovie extends Model
     public function providers(): HasOne
     {
         return $this->hasOne(TMDBMovieProviders::class, 'tmdb_id', 'tmdb_id');
+    }
+
+    /**
+     * Movie Credits
+     *
+     * @return HasOne
+     */
+    public function credits(): HasOne
+    {
+        return $this->hasOne(TMDBMovieCredits::class, 'tmdb_id', 'tmdb_id');
+    }
+
+    /**
+     * Movie Credits
+     *
+     * @return HasOne
+     */
+    public function translations(): HasOne
+    {
+        return $this->hasOne(TMDBMovieTranslations::class, 'tmdb_id', 'tmdb_id');
     }
 }

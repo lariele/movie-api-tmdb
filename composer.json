@@ -13,8 +13,7 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
-        "lariele/movie": "*"
+        "php": "^7.4|^8.0"
     },
     "extra": {
         "laravel": {

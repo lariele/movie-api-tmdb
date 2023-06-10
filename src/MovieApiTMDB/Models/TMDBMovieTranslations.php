@@ -5,20 +5,18 @@ namespace Lariele\MovieApiTMDB\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TMDBMovieProviders extends Model
+class TMDBMovieTranslations extends Model
 {
-    use HasFactory;
-
-    public $timestamps = false;
-    protected $table = 'api_tmdb_movies_providers';
-
-    protected $primaryKey = 'tmdb_id';
-
-    public $incrementing = false;
+    protected $table = 'api_tmdb_movies_translations';
 
     protected $fillable = [
         'results',
-        'tmdb_id'
+        'tmdb_id',
+        'processed_at',
+    ];
+
+    protected $dates = [
+        'processed_at'
     ];
 
     protected $casts = [

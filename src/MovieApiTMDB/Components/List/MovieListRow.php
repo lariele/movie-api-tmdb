@@ -5,7 +5,7 @@ namespace Lariele\MovieApiTMDB\Components\List;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Lariele\Movie\Models\TMDBMovie;
+use App\SFD\Movie\Models\TMDBMovie;
 use Livewire\Component;
 
 class MovieListRow extends Component

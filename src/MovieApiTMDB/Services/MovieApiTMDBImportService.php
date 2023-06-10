@@ -57,7 +57,7 @@ class MovieApiTMDBImportService
         $createdMovie->data()->create($movie);
 
         if (isset($movie['imdb_id'])) {
-            MDBLCreated::dispatch($movie['imdb_id']);
+            //MDBLCreated::dispatch($movie['imdb_id']);
             Created::dispatch($movie['tmdb_id']);
         }
     }
@@ -68,6 +68,8 @@ class MovieApiTMDBImportService
 
         $body = ['page' => $page];
         $body['year'] = $year;
+        //$body['sort_by'] = 'vote_average.desc';
+        $body['vote_count.gte'] = 50;
 
         $movies = $this->movieApi->getMoviesDiscover($body);
 

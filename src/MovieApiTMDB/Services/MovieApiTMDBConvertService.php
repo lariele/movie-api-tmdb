@@ -4,8 +4,8 @@ namespace Lariele\MovieApiTMDB\Services;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Lariele\Movie\Models\Movie;
-use Lariele\Movie\Services\MovieConvertHelperService;
+use App\SFD\Movie\Models\Movie;
+use App\SFD\Movie\Services\MovieConvertHelperService;
 use Lariele\MovieApiTMDB\Models\TMDBMovie;
 
 class MovieApiTMDBConvertService
@@ -38,6 +38,8 @@ class MovieApiTMDBConvertService
         $this->convertMovieData($tmdbMovie);
 
         $this->convertMovieDescriptions($tmdbMovie);
+
+        $this->convertMovieDescriptionTranslations($tmdbMovie);
 
         $this->convertMovieCreators($movie, $tmdbMovie);
 
@@ -73,7 +75,7 @@ class MovieApiTMDBConvertService
     public function convertMovieData(TMDBMovie $tmdbMovie)
     {
         $data = [
-            'release_date' => strlen($tmdbMovie->release_date) > 0 ? $tmdbMovie->release_date : null,
+            'released_at' => strlen($tmdbMovie->release_date) > 0 ? $tmdbMovie->release_date : null,
             'duration' => $tmdbMovie->data->runtime,
         ];
 
@@ -107,17 +109,84 @@ class MovieApiTMDBConvertService
         }
     }
 
+
+    /**
+     * Movie Data
+     *
+     * @param TMDBMovie $tmdbMovie
+     * @return void
+     */
+    public function convertMovieDescriptionTranslations(TMDBMovie $tmdbMovie)
+    {
+        if (!empty($tmdbMovie->data->overview)) {
+            $description = [
+                'description' => $tmdbMovie->data->overview,
+                'type' => 'def',
+            ];
+
+            $this->movieConvertHelper->setDescription($description);
+        }
+
+        if (!empty($tmdbMovie->data->tagline)) {
+            $description = [
+                'description' => $tmdbMovie->data->tagline,
+                'type' => 'short',
+            ];
+
+            $this->movieConvertHelper->setDescription($description);
+        }
+    }
+
     /**
      * Creators
      */
     public function convertMovieCreators(Movie $movie, TMDBMovie $tmdbMovie)
     {
-        $credits = $tmdbMovie->data->credits['cast'] ? collect($tmdbMovie->data->credits['cast'])->pluck('name') : null;
+        $cast = $tmdbMovie->credits['results']['cast'] ?? null;
+        $crew = $tmdbMovie->credits['results']['crew'] ?? null;
 
-        $actors = $tmdbMovie->data->credits['cast'] ? collect($tmdbMovie->data->credits['cast'])->where('known_for_department', '=', 'Acting')->pluck('name') : null;
+        Log::debug('all', [$tmdbMovie->credits['results']]);
+        //$credits = $tmdbMovie->data->credits['cast'] ? collect($tmdbMovie->data->credits['cast'])->pluck('name') : null;
 
         // known_for_department Acting
+        $actors = $cast ? collect($cast)->where('known_for_department', '=', 'Acting')->pluck('name') : null;
         $this->movieConvertHelper->setCreators($movie->actress(), $actors);
+
+        // known_for_department Director
+        $directors = $crew ? collect($crew)->where('job', '=', 'Director')->pluck('name') : null;
+        $this->movieConvertHelper->setCreators($movie->directors(), $directors);
+
+        // known_for_department Music
+        $music = $crew ? collect($crew)->where('known_for_department', '=', 'Camera')->pluck('name') : null;
+        $this->movieConvertHelper->setCreators($movie->camera(), $music);
+
+        // known_for_department Sound
+        $sound = $crew ? collect($crew)->where('known_for_department', '=', 'Sound')->pluck('name') : null;
+        $this->movieConvertHelper->setCreators($movie->music(), $sound);
+
+        // known_for_department Edit
+        $edit = $crew ? collect($crew)->where('job', '=', 'Editor')->pluck('name') : null;
+        $this->movieConvertHelper->setCreators($movie->edit(), $edit);
+
+        // Writing
+        $writing = $crew ? collect($crew)->where('job', '=', 'Writer')->pluck('name') : null;
+        $this->movieConvertHelper->setCreators($movie->script(), $writing);
+
+        // known_for_department Costume
+        $costume = $crew ? collect($crew)->where('known_for_department', '=', 'Costume')->pluck('name') : null;
+        $this->movieConvertHelper->setCreators($movie->costumes(), $costume);
+
+        // Costume & Make-Up
+        $makeUp = $crew ? collect($crew)->where('known_for_department', '=', 'Costume & Make-Up')->pluck('name') : null;
+        $this->movieConvertHelper->setCreators($movie->costumes(), $makeUp);
+
+        // Producer
+        $producers = $crew ? collect($crew)->where('job', '=', 'Producer')->pluck('name') : null;
+        $this->movieConvertHelper->setCreators($movie->producers(), $producers);
+
+        // known_for_department Production
+        $production = $crew ? collect($crew)->where('known_for_department', '=', 'Production')->pluck('name') : null;
+        $this->movieConvertHelper->setCreators($movie->production(), $production);
     }
 
     /**
@@ -233,14 +302,14 @@ class MovieApiTMDBConvertService
 
         $videos = null;
 
-
         foreach ($tmdbVideos as $tmdbVideo) {
             if ($tmdbVideo['site'] == 'YouTube') {
 
                 $video = [
                     'name' => $tmdbVideo['name'],
                     'url' => $tmdbVideo['key'],
-                    'active' => true
+                    'active' => true,
+                    'type' => $tmdbVideo['type']
                 ];
 
                 $videos[] = $video;

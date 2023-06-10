@@ -5,7 +5,7 @@ namespace Lariele\MovieApiTMDB\Components;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Lariele\Movie\Models\Movie;
+use App\SFD\Movie\Models\Movie;
 use Livewire\Component;
 
 class MovieDetail extends Component

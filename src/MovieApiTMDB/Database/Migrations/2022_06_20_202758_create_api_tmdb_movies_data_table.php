@@ -43,7 +43,7 @@ return new class extends Migration {
 
             $table->text('keywords')->nullable();
             $table->text('videos')->nullable();
-            $table->text('images');
+            $table->longText('images');
             $table->longText('credits')->nullable();
             $table->text('external_ids')->nullable();
         });

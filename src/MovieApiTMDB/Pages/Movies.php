@@ -1,6 +1,6 @@
 <?php
 
-namespace Lariele\Movie\Pages;
+namespace App\SFD\Movie\Pages;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;

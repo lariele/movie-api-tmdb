@@ -6,7 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Lariele\MovieApiTMDB\Commands\ConvertMovieCommand;
 use Lariele\MovieApiTMDB\Commands\ConvertMoviesCommand;
 use Lariele\MovieApiTMDB\Commands\GetMovieCommand;
+use Lariele\MovieApiTMDB\Commands\GetMovieCreditsCommand;
 use Lariele\MovieApiTMDB\Commands\GetMoviesDiscoverCommand;
+use Lariele\MovieApiTMDB\Commands\GetMovieTranslationsCommand;
 use Lariele\MovieApiTMDB\Commands\GetMovieWatchProvidersCommand;
 
 class MovieApiTMDBServiceProvider extends ServiceProvider
@@ -33,6 +35,8 @@ class MovieApiTMDBServiceProvider extends ServiceProvider
                 GetMoviesDiscoverCommand::class,
                 GetMovieCommand::class,
                 GetMovieWatchProvidersCommand::class,
+                GetMovieCreditsCommand::class,
+                GetMovieTranslationsCommand::class,
                 ConvertMovieCommand::class,
                 ConvertMoviesCommand::class,
             ]);

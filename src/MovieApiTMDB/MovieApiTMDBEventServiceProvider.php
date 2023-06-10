@@ -8,7 +8,9 @@ use Lariele\MovieApiTMDB\Events\Discovered;
 use Lariele\MovieApiTMDB\Listeners\CheckMovieProviders;
 use Lariele\MovieApiTMDB\Listeners\ConvertMovie;
 use Lariele\MovieApiTMDB\Listeners\GetMovie;
+use Lariele\MovieApiTMDB\Listeners\GetMovieCredits;
 use Lariele\MovieApiTMDB\Listeners\GetMovieProviders;
+use Lariele\MovieApiTMDB\Listeners\GetMovieTranslations;
 
 class MovieApiTMDBEventServiceProvider extends ServiceProvider
 {
@@ -20,6 +22,8 @@ class MovieApiTMDBEventServiceProvider extends ServiceProvider
     protected $listen = [
         Created::class => [
             GetMovieProviders::class,
+            GetMovieCredits::class,
+            GetMovieTranslations::class,
             ConvertMovie::class,
         ],
         Discovered::class => [

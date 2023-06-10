@@ -7,7 +7,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
-use Lariele\Movie\Services\MovieListService;
+use App\SFD\Movie\Services\MovieListService;
 use Livewire\Component;
 
 class MovieList extends Component

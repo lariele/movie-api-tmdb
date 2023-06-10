@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Lariele\MovieApiTMDB\API\MovieTMDBApi;
 use Lariele\MovieApiTMDB\Models\TMDBMovie;
+use Lariele\MovieApiTMDB\Models\TMDBMovieProviders;
 
 class GetMovieWatchProvidersCommand extends Command
 {
@@ -57,7 +58,14 @@ class GetMovieWatchProvidersCommand extends Command
             $this->info('Update providers ' . $movie['title']);
             Log::channel('import')->debug('Update providers ', [$movie['title']]);
 
-            $movie->providers()->create($movieProviders);
+            if(TMDBMovieProviders::query()->where('tmdb_id', '=', $tmdbId)->exists()) {
+                TMDBMovieProviders::query()->where('tmdb_id', '=', $tmdbId)->update([
+                    'results' => $movieProviders['results']
+                ]);
+            }
+            else {
+                $movie->providers()->create($movieProviders);
+            }
         }
     }
 }
