@@ -37,7 +37,6 @@ class MovieApiTMDBListService
             }
 
             if (isset($filter['on_hbo']) && $filter['on_hbo'] == 1) {
-                Log::debug('here', [$filter]);
                 $moviesQuery->where('on_hbo', '=', 1);
             }
 

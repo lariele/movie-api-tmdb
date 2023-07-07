@@ -63,7 +63,6 @@ class MovieList extends Component
     public function filterViewBoxed()
     {
         $this->rowView = 'grid';
-        Log::debug('grid');
     }
 
     public function render(): Factory|View|Application

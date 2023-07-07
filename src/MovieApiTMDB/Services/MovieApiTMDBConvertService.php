@@ -39,7 +39,7 @@ class MovieApiTMDBConvertService
 
         $this->convertMovieDescriptions($tmdbMovie);
 
-        $this->convertMovieDescriptionTranslations($tmdbMovie);
+        $this->convertMovieTranslations($movie, $tmdbMovie);
 
         $this->convertMovieCreators($movie, $tmdbMovie);
 
@@ -82,18 +82,19 @@ class MovieApiTMDBConvertService
         $this->movieConvertHelper->setData($data);
     }
 
-    /**
-     * Movie Data
-     *
-     * @param TMDBMovie $tmdbMovie
-     * @return void
-     */
-    public function convertMovieDescriptions(TMDBMovie $tmdbMovie)
+//    /**
+//     * Movie Data
+//     *
+//     * @param TMDBMovie $tmdbMovie
+//     * @return void
+//     */
+    public function convertMovieDescriptions(TMDBMovie $tmdbMovie): void
     {
         if (!empty($tmdbMovie->data->overview)) {
             $description = [
                 'description' => $tmdbMovie->data->overview,
                 'type' => 'def',
+                'lang' => config('movie.description.lang.en')
             ];
 
             $this->movieConvertHelper->setDescription($description);
@@ -103,37 +104,71 @@ class MovieApiTMDBConvertService
             $description = [
                 'description' => $tmdbMovie->data->tagline,
                 'type' => 'short',
+                'lang' => config('movie.description.lang.en')
             ];
 
             $this->movieConvertHelper->setDescription($description);
         }
     }
 
+    /**
+     * Movie Data
+     *
+     * @param Movie $movie
+     * @param string $name
+     * @param int $lang
+     * @return void
+     */
+    public function convertMovieTranslationName(Movie $movie, string $name, int $lang): void
+    {
+        $movie->names()->create(['name' => $name, 'lang' => $lang]);
+    }
 
     /**
      * Movie Data
      *
+     * @param Movie $movie
      * @param TMDBMovie $tmdbMovie
+     * @param string $lang
      * @return void
      */
-    public function convertMovieDescriptionTranslations(TMDBMovie $tmdbMovie)
+    public function convertMovieTranslations(Movie $movie, TMDBMovie $tmdbMovie, $lang = 'sk'): void
     {
-        if (!empty($tmdbMovie->data->overview)) {
-            $description = [
-                'description' => $tmdbMovie->data->overview,
-                'type' => 'def',
-            ];
+        $langId = config('movie.description.lang.' . $lang);
 
-            $this->movieConvertHelper->setDescription($description);
-        }
+        $translationsByLang = collect($tmdbMovie->translations['results']['translations'])->keyBy('iso_639_1')->toArray(
+        );
 
-        if (!empty($tmdbMovie->data->tagline)) {
-            $description = [
-                'description' => $tmdbMovie->data->tagline,
-                'type' => 'short',
-            ];
+        if (isset($translationsByLang[$lang])) {
+            $translation = $translationsByLang[$lang];
 
-            $this->movieConvertHelper->setDescription($description);
+            if (!empty($translation['data']['title']) && strlen($translation['data']['title']) > 1) {
+                if ($lang === config('movie.app.lang.default')) {
+                    $movie->update(['name' => $translation['data']['title']]);
+                }
+
+                $this->convertMovieTranslationName($movie, $translation['data']['title'], $langId);
+            }
+
+            if (!empty($translation['data']['overview']) && strlen($translation['data']['overview']) > 1) {
+                $description = [
+                    'description' => $translation['data']['overview'],
+                    'type' => 'def',
+                    'lang' => $langId,
+                ];
+
+                $this->movieConvertHelper->setDescription($description);
+            }
+
+            if (!empty($translation['data']['tagline']) && strlen($translation['data']['tagline']) > 1) {
+                $description = [
+                    'description' => $translation['data']['tagline'],
+                    'type' => 'short',
+                    'lang' => $langId,
+                ];
+
+                $this->movieConvertHelper->setDescription($description);
+            }
         }
     }
 
@@ -145,7 +180,6 @@ class MovieApiTMDBConvertService
         $cast = $tmdbMovie->credits['results']['cast'] ?? null;
         $crew = $tmdbMovie->credits['results']['crew'] ?? null;
 
-        Log::debug('all', [$tmdbMovie->credits['results']]);
         //$credits = $tmdbMovie->data->credits['cast'] ? collect($tmdbMovie->data->credits['cast'])->pluck('name') : null;
 
         // known_for_department Acting
@@ -220,7 +254,9 @@ class MovieApiTMDBConvertService
      */
     public function convertMovieCountries(TMDBMovie $tmdbMovie)
     {
-        $countries = $tmdbMovie->data->production_countries ? collect($tmdbMovie->data->production_countries)->pluck('name') : null;
+        $countries = $tmdbMovie->data->production_countries ? collect($tmdbMovie->data->production_countries)->pluck(
+            'name'
+        ) : null;
 
         $this->movieConvertHelper->setCountries($countries);
     }
@@ -234,7 +270,9 @@ class MovieApiTMDBConvertService
     public function convertMoviePoster(TMDBMovie $tmdbMovie)
     {
         if (!empty($tmdbMovie->data->poster_path)) {
-            $this->movieConvertHelper->setPoster('https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->poster_path);
+            $this->movieConvertHelper->setPoster(
+                'https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->poster_path
+            );
         }
     }
 
@@ -247,7 +285,9 @@ class MovieApiTMDBConvertService
     public function convertMovieBackdrop(TMDBMovie $tmdbMovie)
     {
         if (!empty($tmdbMovie->data->backdrop_path)) {
-            $this->movieConvertHelper->setBackdrop('https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->backdrop_path);
+            $this->movieConvertHelper->setBackdrop(
+                'https://image.tmdb.org/t/p/original/' . $tmdbMovie->data->backdrop_path
+            );
         }
     }
 
@@ -260,18 +300,25 @@ class MovieApiTMDBConvertService
     public function convertMovieProviders(TMDBMovie $tmdbMovie)
     {
         if (!empty($tmdbMovie->providers) && !empty($tmdbMovie->providers->results)) {
+            foreach ($tmdbMovie->providers->results as $lang => $country) {
 
-            foreach ($tmdbMovie->providers->results as $country) {
-                if (!empty($country)) {
-                    if (!empty($country['flatrate'])) {
-                        foreach ($country['flatrate'] as $provider) {
-                            $addProviders[] = $provider['provider_name'];
+                if (isset(config('movie.provider.lang')[strtolower($lang)])) {
+                    Log::debug($lang);
+                    if (!empty($country)) {
+                        if (!empty($country['flatrate'])) {
+                            foreach ($country['flatrate'] as $provider) {
+                                $addProviders[] = [
+                                    'name' => $provider['provider_name'],
+                                    'lang' => config('movie.provider.lang.' . strtolower($lang)),
+                                ];
+                            }
                         }
                     }
                 }
             }
 
             if (!empty($addProviders)) {
+                Log::debug('add prov',[$addProviders]);
                 $this->movieConvertHelper->setProviders($addProviders);
             }
         }
@@ -290,6 +337,13 @@ class MovieApiTMDBConvertService
 
         $externals[] = $external;
 
+        $external = [
+            'type' => 'imdb',
+            'external_id' => $tmdbMovie->imdb_id,
+        ];
+
+        $externals[] = $external;
+
         $this->movieConvertHelper->setExternals($externals);
     }
 
@@ -304,7 +358,6 @@ class MovieApiTMDBConvertService
 
         foreach ($tmdbVideos as $tmdbVideo) {
             if ($tmdbVideo['site'] == 'YouTube') {
-
                 $video = [
                     'name' => $tmdbVideo['name'],
                     'url' => $tmdbVideo['key'],
